@@ -41,4 +41,7 @@ Run it in the background and read `files/build.log`; it prints a progress line a
 - Passing `-o` to the final location matters: the 19,892 startup shaders are compiled into macOS's Metal cache for that exact path, and moving the app (even to `/Applications`) makes them compile again on first start. The Xcode Metal toolchain (`xcodebuild -downloadComponent MetalToolchain`) would bake them into the app instead.
 - Disk: the volume had 41 GB free and the build fit, but only just. Plan on about 17 GB for the app plus the work folder.
 - Phases: code rewrite (about 2 min), RomFS extraction and verify (17 GB), then shader preparation (about 15 min compile), then the macOS check.
-- The build was not launched or play-tested; only the build completing was verified.
+- Verified working: the user launched the built app from `files/` and it runs.
+- Moving the app after the build (the user moved it to `/Applications`) makes Metal's shader cache cold: the game showed "warming shaders and pipeline" for minutes. Moving is a move, not a copy, so deleting it afterwards removes the only copy (the 17 GB app ends up in the Trash).
+- Recovery: re-running the same build command reuses `files/TOTK_build` and rebuilt the app in 8 min instead of 28, with the shaders compiled in about 3 s because the cache for that path was still warm. Keep the app in `files/` and open it there.
+- Free disk dropped from 41 GB to 22 GB after the build, so keep the work folder only if more rebuilds are expected.
